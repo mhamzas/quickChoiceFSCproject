@@ -93,10 +93,6 @@ export default class SmartChoiceFSC extends LightningElement {
 	})
 	picklistValues({ error, data }) {
 		console.log('entered picklistvalues');
-		console.log('Received Data::'+JSON.stringify(data));
-		console.log('Received Data::'+JSON.stringify(error));
-		console.log ('in getter: objectApiName is: ' + this.objectName);
-		console.log ('in getter: fieldApiName is: ' + this.fieldName);
 		if (data) {
 			console.log("gtPicklistValues returned data");
 
