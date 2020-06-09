@@ -284,7 +284,7 @@ export default class SmartChoiceFSC extends LightningElement {
 		console.log("entering validate: required=" + this.required + " value=" + this.value);
 		let errorMessage = "You must make a selection in: " + this.masterLabel + " to continue";
 		console.log('Value Type::'+ typeof this.value);
-		if (this.required === true && (!this.value || this.value==="None")) {
+		if (this.required === true && !this.value) {
 			return {
 				isValid: false,
 				errorMessage: errorMessage
