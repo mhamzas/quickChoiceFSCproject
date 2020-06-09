@@ -1,6 +1,6 @@
 import { LightningElement, api, track, wire } from "lwc";
 import { FlowAttributeChangeEvent } from "lightning/flowSupport";
-import { getPicklistValues } from "@salesforce/apex/PopulatePicklist.getPicklistValues";//"lightning/uiObjectInfoApi";
+import getPicklistValues from '@salesforce/apex/Application.getPicklistValues';
 import Quickchoice_Images from '@salesforce/resourceUrl/Quickchoice_Images';	//Static Resource containing images for Visual Cards
 
 /* eslint-disable no-alert */
@@ -88,12 +88,15 @@ export default class SmartChoiceFSC extends LightningElement {
 
 	//possibility master record type only works if there aren't other record types?
 	@wire(getPicklistValues, {
-		fld: this.fieldName,
-		obj : this.objectName,
-		//recordTypeId: "$recordTypeId",
-		//fieldApiName: "$calculatedObjectAndFieldName"
+		obj: '$calculatedObjectName',
+		fld: '$calculatedFieldName',
 	})
 	picklistValues({ error, data }) {
+		console.log('entered picklistvalues');
+		console.log('Received Data::'+JSON.stringify(data));
+		console.log('Received Data::'+JSON.stringify(error));
+		console.log ('in getter: objectApiName is: ' + this.objectName);
+		console.log ('in getter: fieldApiName is: ' + this.fieldName);
 		if (data) {
 			console.log("gtPicklistValues returned data");
 
@@ -104,7 +107,7 @@ export default class SmartChoiceFSC extends LightningElement {
 				picklistOptions.push({ label: "--None--", value: "None" });
 
 			// Picklist values
-			data.values.forEach(key => {
+			data.forEach(key => {
 				picklistOptions.push({
 					label: key.label,
 					value: key.value
@@ -139,6 +142,28 @@ export default class SmartChoiceFSC extends LightningElement {
             return `${this.objectName}.${this.fieldName}`;
         }
         return undefined;
+	}
+	
+	get calculatedObjectName() {
+		console.log ('in getter: objectApiName is: ' + this.objectName);
+		console.log ('in getter: fieldApiName is: ' + this.fieldName);
+
+        if ((this.objectName) && (this.fieldName)) {
+			console.log('satisfied calculatedObjectAndFieldName test');
+            return `${this.objectName}`;
+        }
+        return undefined;
+	}
+	
+	get calculatedFieldName() {
+		console.log ('in getter: objectApiName is: ' + this.objectName);
+		console.log ('in getter: fieldApiName is: ' + this.fieldName);
+
+        if ((this.objectName) && (this.fieldName)) {
+			console.log('satisfied calculatedObjectAndFieldName test');
+            return `${this.fieldName}`;
+        }
+        return undefined;
     }
 
 	get gridClass() {
@@ -161,6 +186,8 @@ export default class SmartChoiceFSC extends LightningElement {
 	}
 
 	connectedCallback() {
+		console.log("ObjectName::"+this.objectName);
+		console.log("fieldName::"+this.fieldName);
 		console.log("Entering Connected Callback for smartchoice");
 		console.log("recordtypeId is: " + this.recordTypeId);
 		if (!this.recordTypeId) this.recordTypeId = this.masterRecordTypeId;
@@ -260,7 +287,7 @@ export default class SmartChoiceFSC extends LightningElement {
 		//If the component is invalid, return the isValid parameter as false and return an error message.
 		console.log("entering validate: required=" + this.required + " value=" + this.value);
 		let errorMessage = "You must make a selection in: " + this.masterLabel + " to continue";
-
+		console.log('Value Type::'+ typeof this.value);
 		if (this.required === true && (!this.value || this.value==="None")) {
 			return {
 				isValid: false,
@@ -272,7 +299,7 @@ export default class SmartChoiceFSC extends LightningElement {
 	}
 
 	handleChange(event) {
-console.log('EVENT',event);
+	console.log('EVENT',event);
 		this.selectedValue = (this.showVisual) ? event.target.value : event.detail.value;
 		console.log("selected value is: " + this.selectedValue);
 		this.dispatchFlowAttributeChangedEvent('value', this.selectedValue);
