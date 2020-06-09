@@ -1,6 +1,6 @@
 import { LightningElement, api, track, wire } from "lwc";
 import { FlowAttributeChangeEvent } from "lightning/flowSupport";
-import { getPicklistValues } from "lightning/uiObjectInfoApi";
+import { getPicklistValues } from "@salesforce/apex/PopulatePicklist.getPicklistValues";//"lightning/uiObjectInfoApi";
 import Quickchoice_Images from '@salesforce/resourceUrl/Quickchoice_Images';	//Static Resource containing images for Visual Cards
 
 /* eslint-disable no-alert */
@@ -88,8 +88,10 @@ export default class SmartChoiceFSC extends LightningElement {
 
 	//possibility master record type only works if there aren't other record types?
 	@wire(getPicklistValues, {
-		recordTypeId: "$recordTypeId",
-		fieldApiName: "$calculatedObjectAndFieldName"
+		fld: this.fieldName,
+		obj : this.objectName,
+		//recordTypeId: "$recordTypeId",
+		//fieldApiName: "$calculatedObjectAndFieldName"
 	})
 	picklistValues({ error, data }) {
 		if (data) {
@@ -259,7 +261,7 @@ export default class SmartChoiceFSC extends LightningElement {
 		console.log("entering validate: required=" + this.required + " value=" + this.value);
 		let errorMessage = "You must make a selection in: " + this.masterLabel + " to continue";
 
-		if (this.required === true && !this.value) {
+		if (this.required === true && (!this.value || this.value==="None")) {
 			return {
 				isValid: false,
 				errorMessage: errorMessage
